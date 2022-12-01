@@ -273,22 +273,22 @@ def SampleMeta(name, nb_graphs):
     data_stats_df.to_csv('graphs/graph_stats.csv')
 
 
-def sampleZip_s(name, nb_graphs):
-    file = 'df_Yelp' + name + '_comp.csv'
+def sampleZip_s(name, nb_graphs, j):
+    file = 'df_Yelp' + name + f'_comp{j}.csv'
     df = pd.read_csv(file, sep='\t', header=None, quoting=csv.QUOTE_NONE, encoding='utf-8')
     df.columns = ['idx', 'prod_id', 'rating', 'date', 'review', 'label']
     data_pos = df.loc[df['label']==1]
-    data_neg = df.loc[df['label']==-1]
+    data_neg = df.loc[df['label']==-1] #negatives are anomalies
     nb_users = []
     ratio_anomaly = []
     nb_edges = []
     nb_anomalies = []
-    for i in range(nb_graphs):
+    for i in range((j-1)*nb_graphs, j*nb_graphs):
         data = {}
-        nb_pos = random.randint(data_pos.shape[0] - 8000, data_pos.shape[0])
+        nb_pos = random.randint(int(data_pos.shape[0] * 0.3), int(data_pos.shape[0] * 0.6))
         # nb_anomalies.append(nb_pos)
         # print("pos count: ", nb_pos)
-        nb_neg = random.randint(data_neg.shape[0] - 8000, data_neg.shape[0])
+        nb_neg = random.randint(int(data_neg.shape[0] * 0.3), int(data_neg.shape[0] * 0.6))
         # print("neg count: ", nb_neg)
         # nb_user = nb_pos + nb_neg
         # ratio_anomaly.append(nb_pos / nb_user)
@@ -323,4 +323,5 @@ def sampleZip_s(name, nb_graphs):
     data_stats_df.to_csv('graphs/graph_stats_' + date.today().strftime("%Y_%m_%d") + '.csv', index=False)
 
 
-sampleZip_s('Zip', 40)
+for i in [1, 2]:
+    sampleZip_s('Zip', 20, i)
